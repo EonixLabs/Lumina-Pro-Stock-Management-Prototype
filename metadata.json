@@ -1,0 +1,8 @@
+{
+  "name": "Lumina Gadgets Inventory Pro",
+  "description": "A comprehensive stock management dashboard for an electronics retailer featuring real-time tracking and automated sales metrics.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
