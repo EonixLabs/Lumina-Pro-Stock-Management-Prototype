@@ -37,8 +37,11 @@ An advanced, AI-powered inventory management and sales dashboard designed to str
     ```
 
 3.  **Configure Environment Variables:**
-    Set the appropriate API keys for the AI integration.
-    Create or edit `.env.local` and add:
+    
+    > [!IMPORTANT]
+    > You **MUST** create a `.env` file in the root directory and place your **Gemini Key** inside it for the application and its AI features to function.
+
+    Create a `.env` file and add:
     ```env
     GEMINI_API_KEY=your_gemini_api_key_here
     ```
@@ -73,4 +76,3 @@ Feel free to check out the [issues page](../../issues).
 ## 📄 License
 
 This project is open-sourced and available under the [MIT License](LICENSE).
->>>>>>> 9c4ad35 (Initial commit - Lumina Pro Stock Management Prototype)
