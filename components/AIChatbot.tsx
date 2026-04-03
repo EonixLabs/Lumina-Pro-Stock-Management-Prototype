@@ -4,9 +4,10 @@ import { askInventoryAssistant } from '../services/geminiService';
 
 interface AIChatbotProps {
   products: Product[];
+  apiKey: string;
 }
 
-const AIChatbot: React.FC<AIChatbotProps> = ({ products }) => {
+const AIChatbot: React.FC<AIChatbotProps> = ({ products, apiKey }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       role: 'assistant', 
@@ -38,7 +39,7 @@ const AIChatbot: React.FC<AIChatbotProps> = ({ products }) => {
     setInput('');
     setIsTyping(true);
 
-    const response = await askInventoryAssistant(input, products);
+    const response = await askInventoryAssistant(input, products, apiKey);
     
     const assistantMessage: ChatMessage = { 
       role: 'assistant', 

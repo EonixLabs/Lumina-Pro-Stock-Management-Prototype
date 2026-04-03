@@ -2,9 +2,10 @@
 import { GoogleGenAI } from "@google/genai";
 import { Product } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyA0ekLVgTC1rlsMMjq-sxnHNOSWWyjNQbw" });
+export async function askInventoryAssistant(prompt: string, products: Product[], apiKey: string): Promise<string> {
+  if (!apiKey) return "API Key is required to communicate with the AI Assistant.";
+  const ai = new GoogleGenAI({ apiKey });
 
-export async function askInventoryAssistant(prompt: string, products: Product[]): Promise<string> {
   const context = `
     You are an expert inventory analyst for "Lumina Gadgets", a high-end electronics store.
     Current Inventory Data in JSON:

@@ -7,10 +7,12 @@ import InventoryList from './components/InventoryList';
 import SalesTerminal from './components/SalesTerminal';
 import AIChatbot from './components/AIChatbot';
 import VoiceAssistant from './components/VoiceAssistant';
+import ApiSetupModal from './components/ApiSetupModal';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [apiKey, setApiKey] = useState<string>(() => sessionStorage.getItem('geminiApiKey') || '');
 
   const handleUpdateStock = useCallback((id: string, newLevel: number) => {
     setProducts(prev => prev.map(p => 
@@ -75,7 +77,7 @@ const App: React.FC = () => {
       case 'sales':
         return <SalesTerminal products={products} onSellProduct={handleSellProduct} />;
       case 'ai-assistant':
-        return <AIChatbot products={products} />;
+        return <AIChatbot products={products} apiKey={apiKey} />;
       default:
         return <Dashboard products={products} />;
     }
@@ -106,11 +108,22 @@ const App: React.FC = () => {
       <div className="fixed bottom-4 right-4 z-50">
         <VoiceAssistant 
           products={products}
+          apiKey={apiKey}
           onAddProduct={handleAddProduct}
           onUpdateStock={handleUpdateStock}
           onDeleteProduct={handleDeleteProduct}
         />
       </div>
+
+      {/* API Setup Modal Overlay */}
+      {!apiKey && (
+        <ApiSetupModal
+          onSave={(key) => {
+            sessionStorage.setItem('geminiApiKey', key);
+            setApiKey(key);
+          }}
+        />
+      )}
     </div>
   );
 };

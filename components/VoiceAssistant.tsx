@@ -4,15 +4,16 @@ import { Product } from '../types';
 
 interface VoiceAssistantProps {
   products: Product[];
+  apiKey: string;
   onAddProduct: (p: Omit<Product, 'id' | 'totalSales' | 'lastUpdated'>) => void;
   onUpdateStock: (id: string, level: number) => void;
   onDeleteProduct: (id: string) => void;
 }
 
-const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ products, onAddProduct, onUpdateStock, onDeleteProduct }) => {
+const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ products, apiKey, onAddProduct, onUpdateStock, onDeleteProduct }) => {
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState<'idle' | 'connecting' | 'listening' | 'processing'>('idle');
-  
+
   // Refs for Audio Handling
   const sessionRef = useRef<any>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -85,15 +86,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ products, onAddProduct,
   };
 
   const startAssistant = async () => {
+    if (!apiKey) {
+      alert("API Key is missing. Please refresh and provide your key.");
+      return;
+    }
+
     try {
       setStatus('connecting');
       setIsActive(true);
 
-      const ai = new GoogleGenAI({ apiKey: "AIzaSyA0ekLVgTC1rlsMMjq-sxnHNOSWWyjNQbw" });
-      
+      const ai = new GoogleGenAI({ apiKey });
+
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
       outputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-      
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
@@ -195,7 +201,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ products, onAddProduct,
               setStatus('processing');
               for (const fc of message.toolCall.functionCalls) {
                 let result = "Action failed";
-                
+
                 if (fc.name === 'add_product') {
                   const args = fc.args as any;
                   onAddProduct({
@@ -251,7 +257,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ products, onAddProduct,
     // Mobile: bottom-24 (to clear Floating Action Bars)
     // Desktop: bottom-8
     <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-[60] flex flex-col items-end">
-      
+
       {/* Status Bubble */}
       <div className={`
         mb-4 mr-2 bg-slate-900 text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl border border-white/10 flex items-center gap-2
@@ -270,18 +276,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ products, onAddProduct,
           rounded-full flex items-center justify-center 
           transition-all duration-300 shadow-2xl 
           hover:scale-105 active:scale-95 border-4 relative
-          ${isActive 
-            ? 'bg-rose-600 border-rose-500 shadow-rose-200' 
+          ${isActive
+            ? 'bg-rose-600 border-rose-500 shadow-rose-200'
             : 'bg-indigo-600 border-indigo-500 shadow-indigo-200'
           }
         `}
       >
         {isActive ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 md:w-8 md:h-8"><rect width="12" height="12" x="6" y="6" rx="2"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 md:w-8 md:h-8"><rect width="12" height="12" x="6" y="6" rx="2" /></svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 md:w-8 md:h-8"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 md:w-8 md:h-8"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" x2="12" y1="19" y2="22" /></svg>
         )}
-        
+
         {/* Pulse Ring Animation */}
         {isActive && status === 'listening' && (
           <span className="absolute inset-0 rounded-full border-4 border-emerald-500 animate-ping opacity-20"></span>
